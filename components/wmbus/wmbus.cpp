@@ -26,6 +26,7 @@ namespace wmbus {
     this->add_driver(new Apator08());
     this->add_driver(new Apator162());
     this->add_driver(new ApatorEITN());
+    this->add_driver(new ApatorN1());
     this->add_driver(new Bmeters());
     this->add_driver(new C5isf());
     this->add_driver(new Compact5());
