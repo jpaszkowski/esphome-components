@@ -1,4 +1,4 @@
-import esphome.codegen as cg
+rzejimport esphome.codegen as cg
 import esphome.config_validation as cv
 from esphome import pins
 from esphome.components import time
@@ -127,5 +127,5 @@ async def to_code(config):
     cg.add_library(
         None,
         None,
-        "https://github.com/SzczepanLeon/wmbus-drivers#1.3.13",
+        "https://github.com/jpaszkowski/wmbus-drivers#1.3.15",
     )
