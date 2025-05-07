@@ -174,6 +174,7 @@ namespace wmbus {
       case 0x7D:
       case 0x7F:
       case 0x9E:
+      case 0xA0:
         offset = 15;
         // dll-mfct + dll-id + dll-version + dll-type
         for (int j=0; j<8; ++j) {
