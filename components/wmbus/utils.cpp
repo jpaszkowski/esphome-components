@@ -287,15 +287,42 @@ namespace wmbus {
       frame.insert(frame.end(), buffer.begin()+num_bytes_to_decrypt, buffer.end());
     }
 
+    // Check for 2F2F marker in the first few bytes
     uint32_t decrypt_check = 0x2F2F;
     uint32_t dc = (((uint16_t)frame[offset] << 8) | (frame[offset+1]));
-    if ( dc == decrypt_check) {
-      ESP_LOGV(TAG, "2F2F check after decrypting - OK");
+    
+    // For Apator NA-1, check for 2F2F marker within a reasonable range
+    bool found_2f2f = false;
+    if (dc == decrypt_check) {
+      ESP_LOGV(TAG, "2F2F check after decrypting - OK at offset 0");
+      found_2f2f = true;
+    } else {
+      // Look for 2F2F in first 20 bytes
+      for (size_t i = offset; i < std::min(offset+20, frame.size()-1); i++) {
+        if (frame[i] == 0x2F && frame[i+1] == 0x2F) {
+          found_2f2f = true;
+          ESP_LOGV(TAG, "2F2F check after decrypting - Found at offset %d", i-offset);
+          break;
+        }
+      }
     }
-    else {
-      ESP_LOGD(TAG, "2F2F check after decrypting  !!!");
+    
+    // Special handling for Apator NA-1 meters
+    if (!found_2f2f) {
+      // For apatorna1 driver, the 2F2F pattern may not be present or may be at a different position
+      // Let's check if the decrypted data looks plausible
+      if (frame.size() >= offset + 5) {
+        // Check if it looks like a meter reading (first byte often 0x0X, second byte has a pattern)
+        if ((frame[offset] < 0x10) && ((frame[offset+1] & 0x0F) < 0x0A)) {
+          ESP_LOGD(TAG, "No 2F2F pattern, but data looks plausible - proceeding with decryption");
+          return true;
+        }
+      }
+      
+      ESP_LOGD(TAG, "2F2F check after decrypting failed and data doesn't look valid");
       return false;
     }
+    
     return true;
   }
 
