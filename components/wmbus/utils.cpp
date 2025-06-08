@@ -287,31 +287,13 @@ namespace wmbus {
       frame.insert(frame.end(), buffer.begin()+num_bytes_to_decrypt, buffer.end());
     }
 
-    // Special handling for ApatorNa1 meters - they have 2F2F at a different offset
-    if (frame.size() >= offset+20) {  // Look for 2F2F in a reasonable range
-      bool found_2f2f = false;
-      for (size_t i = offset; i < std::min(offset+20, frame.size()-1); i++) {
-        if (frame[i] == 0x2F && frame[i+1] == 0x2F) {
-          found_2f2f = true;
-          ESP_LOGD(TAG, "2F2F check after decrypting - Found at offset %d", i);
-          break;
-        }
-      }
-      
-      if (found_2f2f) {
-        ESP_LOGV(TAG, "2F2F verification pattern found - OK");
-        return true;
-      }
-    }
-
-    // Traditional check right at the beginning of the decrypted data
     uint32_t decrypt_check = 0x2F2F;
     uint32_t dc = (((uint16_t)frame[offset] << 8) | (frame[offset+1]));
     if ( dc == decrypt_check) {
       ESP_LOGV(TAG, "2F2F check after decrypting - OK");
     }
     else {
-      ESP_LOGD(TAG, "2F2F check after decrypting failed");
+      ESP_LOGD(TAG, "2F2F check after decrypting  !!!");
       return false;
     }
     return true;
