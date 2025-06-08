@@ -298,11 +298,15 @@ namespace wmbus {
       found_2f2f = true;
     } else {
       // Look for 2F2F in first 20 bytes
-      for (size_t i = offset; i < std::min(offset+20, frame.size()-1); i++) {
-        if (frame[i] == 0x2F && frame[i+1] == 0x2F) {
-          found_2f2f = true;
-          ESP_LOGV(TAG, "2F2F check after decrypting - Found at offset %d", i-offset);
-          break;
+      size_t max_search = offset + 20;
+      if (frame.size() > 1) { // Ensure we have at least 2 bytes for comparison
+        max_search = (max_search < frame.size() - 1) ? max_search : frame.size() - 1;
+        for (size_t i = offset; i < max_search; i++) {
+          if (frame[i] == 0x2F && frame[i+1] == 0x2F) {
+            found_2f2f = true;
+            ESP_LOGV(TAG, "2F2F check after decrypting - Found at offset %d", i-offset);
+            break;
+          }
         }
       }
     }
