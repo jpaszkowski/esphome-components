@@ -105,7 +105,13 @@ namespace wmbus {
               ESP_LOGD(TAG, "Decrypted T : %s", decrypted_telegram.c_str());
             }
             else {
-              frameOk = false;
+              // Special case for ApatorNa1 which handles decryption internally
+              if (selected_driver->get_name() == "apatorna1") {
+                ESP_LOGI(TAG, "ApatorNa1 driver handles decryption internally, proceeding despite decryption failure");
+                frameOk = true; // Keep frameOk true for ApatorNa1 driver
+              } else {
+                frameOk = false;
+              }
             }
           }
           if (frameOk) {
