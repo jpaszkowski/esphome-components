@@ -175,7 +175,6 @@ namespace wmbus {
       case 0x7F:
       case 0x9E:
       case 0xA0:
-      case 0xA1: // Adding support for CI field 0xA1 (similar to 0xA0)
         offset = 15;
         // dll-mfct + dll-id + dll-version + dll-type
         for (int j=0; j<8; ++j) {
