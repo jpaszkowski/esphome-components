@@ -105,13 +105,11 @@ namespace wmbus {
               ESP_LOGD(TAG, "Decrypted T : %s", decrypted_telegram.c_str());
             }
             else {
-              // Special case for ApatorNa1 which handles decryption internally
-              if (selected_driver->get_name() == "apatorna1") {
-                ESP_LOGI(TAG, "ApatorNa1 driver handles decryption internally, proceeding despite decryption failure");
-                frameOk = true; // Keep frameOk true for ApatorNa1 driver
-              } else {
-                frameOk = false;
+              if (selected_driver->get_name() == "apatorna1"){
+                 ESP_LOGD(TAG, "Decryption failed for ID [0x%08X] APATOR with key '%s'", meter_id, sensor->key.c_str());
               }
+              ESP_LOGE(TAG, "Decryption failed for ID [0x%08X]", meter_id);
+              frameOk = false;
             }
           }
           if (frameOk) {
